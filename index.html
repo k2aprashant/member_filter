@@ -190,6 +190,14 @@
     <script>
         $(document).ready(function() {
             
+            if (localStorage.getItem("data2")) {
+                $("#data2").val(localStorage.getItem("data2"));
+            }
+
+            $("#data2").on("input", function() {
+                localStorage.setItem("data2", $(this).val().trim());
+            });
+
             $("#matchButton").click(function() {
                 let data1Input = $("#data1").val().trim().split("\n").filter(line => line.trim() !== "");
                 let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
