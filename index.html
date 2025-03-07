@@ -245,10 +245,6 @@
                                                 <a href="tel:${mobile}" class="mobile-number">
                                                     <i class="fas fa-phone-alt me-1"></i>${mobile}
                                                 </a>
-                                                <button class="btn-copy" data-mobile="${mobile}">
-                                                    <i class="far fa-copy me-1"></i>Copy
-                                                </button>
-                                                <span class="copy-success">Copied!</span>
                                             </div>
                                         </div>
                                     </div>
@@ -271,25 +267,6 @@
                 filteredData.forEach(item => {
                     
                     resultsContainer.append(resultItem);
-                });
-                
-                // Copy functionality
-                $('.btn-copy').click(function() {
-                    const mobileNumber = $(this).data('mobile');
-                    const copySuccess = $(this).siblings('.copy-success');
-                    
-                    // Create temporary element for copying
-                    const tempInput = $('<input>');
-                    $('body').append(tempInput);
-                    tempInput.val(mobileNumber).select();
-                    document.execCommand('copy');
-                    tempInput.remove();
-                    
-                    // Show success message
-                    copySuccess.addClass('show');
-                    setTimeout(function() {
-                        copySuccess.removeClass('show');
-                    }, 2000);
                 });
             });
         });
