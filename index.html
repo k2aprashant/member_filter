@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Filter</title>
-    <!-- Bootstrap CSS -->
+    <title>Member Filter</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #4361ee;
@@ -208,7 +205,7 @@
                 function getFZCodeAndNameFromData1(item) {
                     let parts = item.trim().split(" ");
                     let fzCode = parts[0]; // FZ code (e.g., FZ03)
-                    let name = parts.slice(1).join(" ").trim(); // Rest is the name
+                    let name = parts.slice(1).join(" ").trim();
                     return { fzCode, name };
                 }
 
@@ -224,7 +221,6 @@
                 $.each(data1Input, function(index1, item1) {
                     let { fzCode, name: name1 } = getFZCodeAndNameFromData1(item1);
                     $.each(data2Input, function(index2, item2) {
-                        // let name2 = getNameFromData2(item2);
                         let {removeNumbers:name2, mobile} = getNameFromData2(item2);
                         if (name1 === name2) {
                             // data3.push(`${fzCode} ${name2} ${mobile}`);
@@ -261,14 +257,6 @@
                 // } else {
                 //     $("#data3").val("No matches found.");
                 // }
-            });
-
-            $('#filterButton').click(function() {
-                // Display results
-                filteredData.forEach(item => {
-                    
-                    resultsContainer.append(resultItem);
-                });
             });
         });
     </script>
