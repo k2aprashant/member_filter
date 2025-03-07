@@ -201,6 +201,7 @@
             $("#matchButton").click(function() {
                 let data1Input = $("#data1").val().trim().split("\n").filter(line => line.trim() !== "");
                 let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
+                $("#data3").html("");
                 let data3 = [];
 
                 // Function to extract FZ code and name from Data 1
@@ -254,12 +255,12 @@
                     });
                 });
 
-                // Display matched results in Data 3 textarea
-                if (data3.length > 0) {
-                    $("#data3").val(data3.join("\n"));
-                } else {
-                    $("#data3").val("No matches found.");
-                }
+                // // Display matched results in Data 3 textarea
+                // if (data3.length > 0) {
+                //     $("#data3").val(data3.join("\n"));
+                // } else {
+                //     $("#data3").val("No matches found.");
+                // }
             });
 
             $('#filterButton').click(function() {
