@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Matching with Report</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .container {
+            margin: 20px;
+        }
+        .data-box {
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+            max-width: 600px;
+        }
+        .data-field {
+            margin: 5px 0;
+        }
+        .data-field strong {
+            color: #2c3e50;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        textarea {
+            width: 600px;
+            height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Five Data Boxes -->
+        <div class="data-box">
+            <div class="data-field"><strong>Code:</strong> <span class="code">FZ03</span></div>
+            <div class="data-field"><strong>Name:</strong> त्रिवेन्द्र दास</div>
+            <div class="data-field"><strong>Mobile:</strong> 9058005050</div>
+            <div class="data-field"><strong>Reason:</strong><br><input type="text" class="reason-input" placeholder="Enter reason"></div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-field"><strong>Code:</strong> <span class="code">FZ05</span></div>
+            <div class="data-field"><strong>Name:</strong> आशीष दास</div>
+            <div class="data-field"><strong>Mobile:</strong> 9368718829</div>
+            <div class="data-field"><strong>Reason:</strong><br><input type="text" class="reason-input" placeholder="Enter reason"></div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-field"><strong>Code:</strong> <span class="code">FZ08</span></div>
+            <div class="data-field"><strong>Name:</strong> मनीष दास</div>
+            <div class="data-field"><strong>Mobile:</strong> 7505445379</div>
+            <div class="data-field"><strong>Reason:</strong><br><input type="text" class="reason-input" placeholder="Enter reason"></div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-field"><strong>Code:</strong> <span class="code">FZ12</span></div>
+            <div class="data-field"><strong>Name:</strong> पुष्पेन्द्र दास</div>
+            <div class="data-field"><strong>Mobile:</strong> 9286550208</div>
+            <div class="data-field"><strong>Reason:</strong><br><input type="text" class="reason-input" placeholder="Enter reason"></div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-field"><strong>Code:</strong> <span class="code">FZ25</span></div>
+            <div class="data-field"><strong>Name:</strong> अंशुल दास</div>
+            <div class="data-field"><strong>Mobile:</strong> 9368511417</div>
+            <div class="data-field"><strong>Reason:</strong><br><input type="text" class="reason-input" placeholder="Enter reason"></div>
+        </div>
+
+        <button id="readyReport">Ready Report</button>
+
+        <h3>Final Report</h3>
+        <textarea id="reportOutput" placeholder="Report will appear here"></textarea>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#readyReport").click(function() {
+                let report = ["Firozabad ke report \n"];
+                
+                // Collect data from each box
+                $('.data-box').each(function() {
+                    let code = $(this).find('.code').text();
+                    let name = $(this).find('.data-field:eq(1)').text().replace('Name: ', '');
+                    let mobile = $(this).find('.data-field:eq(2)').text().replace('Mobile: ', '');
+                    let reason = $(this).find('.reason-input').val() || 'No reason provided';
+
+                    // Create formatted entry
+                    let entry = `${code} ${name} ➖ ${reason}`;
+                    report.push(entry);
+                });
+
+
+                // Display in textarea
+                $("#reportOutput").val(report.join('\n'));
+            });
+        });
+    </script>
+</body>
+</html>

@@ -146,6 +146,10 @@
                 padding: 12px;
             }
         }
+
+        .hide_karo{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -171,12 +175,20 @@
                 <button id="matchButton" class="btn btn-filter">
                     <i class="fas fa-search me-2"></i>Filter
                 </button>
+            </div>
+        </div>
 
-                <div id="data3" class="mt-4">
-                    <!-- <div class="no-results">
-                        <i class="fas fa-info-circle me-2"></i>Enter text and click filter to see results
-                    </div> -->
-                </div>
+        <div class="card mt-4 p-3 hide_karo">
+            <div class="card-body">
+                <div id="data3" class="mt-4"></div>
+                <button class="btn btn-filter mt-3" id="readyReport" style="background-color: #28a745;">Report</button>
+            </div>
+        </div>
+
+        <div class="card mt-4 p-3 hide_karo">
+            <div class="card-body">
+                <h4>Final Report</h4>
+                <textarea id="reportOutput" class="form-control" rows="10" placeholder="Report will appear here"></textarea>
             </div>
         </div>
     </div>
@@ -187,15 +199,32 @@
     <script>
         $(document).ready(function() {
             
+            // localStorage.clear();
+            // localStorage.removeItem('keyName');
+
             if (localStorage.getItem("data2")) {
                 $("#data2").val(localStorage.getItem("data2"));
+            }
+
+            if (localStorage.getItem("data1")) {
+                $("#data1").val(localStorage.getItem("data1"));
             }
 
             $("#data2").on("input", function() {
                 localStorage.setItem("data2", $(this).val().trim());
             });
 
+            $("#data1").on("input", function() {
+                localStorage.setItem("data1", $(this).val().trim());
+            });
+
             $("#matchButton").click(function() {
+                if ($("#data1").val().trim() == "" || $("#data2").val().trim() == "") {
+                    alert("Pahle Aap Dono Box Me Data Daale");
+                    return;
+                }
+
+                $(".hide_karo").show();
                 let data1Input = $("#data1").val().trim().split("\n").filter(line => line.trim() !== "");
                 let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
                 $("#data3").html("");
@@ -227,25 +256,31 @@
                             const resultItem = `
                                 <div class="result-item">
                                     <div class="row align-items-center">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-2 mb-md-0">
                                                 <strong>Code:</strong> <span class="code">${fzCode}</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-2 mb-md-0">
-                                                <strong>Name:</strong> ${name2}
+                                                <strong>Name:</strong> <span class="name001">${name2}</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mobile-container">
                                                 <a href="tel:${mobile}" class="mobile-number">
-                                                    <i class="fas fa-phone-alt me-1"></i>${mobile}
+                                                    <i class="fas fa-phone-alt me-1"></i> <span class="">${mobile}</span>
                                                 </a>
                                             </div>
                                         </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-2 mb-md-0">
+                                                <input type="text" class="form-control reason001" placeholder="Enter Your Reasons"/>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>`;
+                                </div>
+                                `;
                             $("#data3").append(resultItem);
                         }
                     });
@@ -257,6 +292,32 @@
                 // } else {
                 //     $("#data3").val("No matches found.");
                 // }
+            });
+
+
+            $("#readyReport").click(function() {
+                let reportOutput = $('.result-item').length;
+                if(reportOutput == 0 || reportOutput == ""){
+                    alert('Pahle Aap Date Ko Filter Kar Le');
+                    return false;
+                }
+                
+                let report = ["Firozabad ke report \n"];
+                // Collect data from each box
+                $('.result-item').each(function() {
+                    let code = $(this).find('.code').text();
+                    let name = $(this).find('.name001').text();
+                    let reason = $(this).find('.reason001').val() || 'No reason provided';
+
+                    // Create formatted entry
+                    let entry = `${code} ${name} ➖ ${reason}`;
+                    report.push(entry);
+                });
+
+                // Display in textarea
+                let formattedReport = report.join('\n');
+                localStorage.setItem("reportData", formattedReport);
+                $("#reportOutput").val(formattedReport);
             });
         });
     </script>
