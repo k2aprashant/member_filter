@@ -199,9 +199,7 @@
     <script>
         $(document).ready(function() {
             
-            // localStorage.clear();
-            // localStorage.removeItem('keyName');
-
+            // Load saved data if exists
             if (localStorage.getItem("data2")) {
                 $("#data2").val(localStorage.getItem("data2"));
             }
@@ -210,6 +208,7 @@
                 $("#data1").val(localStorage.getItem("data1"));
             }
 
+            // Save data as user types
             $("#data2").on("input", function() {
                 localStorage.setItem("data2", $(this).val().trim());
             });
@@ -220,7 +219,7 @@
 
             $("#matchButton").click(function() {
                 if ($("#data1").val().trim() == "" || $("#data2").val().trim() == "") {
-                    alert("Pahle Aap Dono Box Me Data Daale");
+                    alert("Please enter data in both boxes first");
                     return;
                 }
 
@@ -240,19 +239,26 @@
 
                 // Function to extract name from Data 2 (remove phone number)
                 function getNameFromData2(item) {
-                    let mobileMatch = item.match(/\d{10,11}/); // Extract 10 or 11 digit number
+                    // Extract mobile number (10 or 11 digits)
+                    let mobileMatch = item.match(/\d{10,11}/);
                     let mobile = mobileMatch ? mobileMatch[0] : "";
-                    let removeNumbers = item.replace(/^\d+\s+/, "").replace(/\d{10,11}/, "").trim();
-                    return { removeNumbers, mobile };
+                    
+                    // Remove leading numbers and mobile number, keep name exactly as is
+                    let name = item.replace(/^\d+\s+/, "") // Remove starting numbers
+                                  .replace(/\d{10,11}/, "") // Remove phone number
+                                  .trim();
+                    return { name, mobile };
                 }
 
-                // Matching logic
+                // EXACT MATCHING LOGIC
                 $.each(data1Input, function(index1, item1) {
                     let { fzCode, name: name1 } = getFZCodeAndNameFromData1(item1);
+                    
                     $.each(data2Input, function(index2, item2) {
-                        let {removeNumbers:name2, mobile} = getNameFromData2(item2);
+                        let {name: name2, mobile} = getNameFromData2(item2);
+                        
+                        // EXACT MATCH ONLY (including numbers like "2" at the end)
                         if (name1 === name2) {
-                            // data3.push(`${fzCode} ${name2} ${mobile}`);
                             const resultItem = `
                                 <div class="result-item">
                                     <div class="row align-items-center">
@@ -286,19 +292,15 @@
                     });
                 });
 
-                // // Display matched results in Data 3 textarea
-                // if (data3.length > 0) {
-                //     $("#data3").val(data3.join("\n"));
-                // } else {
-                //     $("#data3").val("No matches found.");
-                // }
+                if ($("#data3").children().length === 0) {
+                    $("#data3").html('<div class="no-results">No matches found.</div>');
+                }
             });
-
 
             $("#readyReport").click(function() {
                 let reportOutput = $('.result-item').length;
                 if(reportOutput == 0 || reportOutput == ""){
-                    alert('Pahle Aap Date Ko Filter Kar Le');
+                    alert('Please filter data first');
                     return false;
                 }
                 
