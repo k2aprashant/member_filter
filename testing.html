@@ -1,146 +1,481 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
 <head>
-    <title>English to Hindi Converter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tehsil Wise Name Filter</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --text: #e2e8f0;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.85);
+        }
+
+        [data-bs-theme="light"] {
+            --text: #1e293b;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f0f8ff;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
-        .container {
-            background: white;
-            padding: 30px;
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(165, 180, 252, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .card-header {
+            background: rgba(99, 102, 241, 0.15);
+            border-bottom: 1px solid rgba(165, 180, 252, 0.2);
+        }
+
+        .form-select, .form-control {
+            background-color: rgba(165, 180, 252, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(165, 180, 252, 0.3);
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
+
+        [data-bs-theme="light"] .form-select,
+        [data-bs-theme="light"] .form-control {
+            background-color: white;
+            border-color: #cbd5e1;
         }
-        .input-group {
-            margin: 20px 0;
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
         }
-        label {
-            display: block;
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-clear:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .theme-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            pointer-events: none;
+        }
+
+        .theme-label.sun { left: 8px; }
+        .theme-label.moon { right: 8px; }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-bs-theme="dark"]) {
+                --text: #1e293b;
+                --bg: #f8fafc;
+                --card-bg: rgba(255, 255, 255, 0.95);
+            }
+        }
+
+        /* Matched List Styling */
+        #teamMatchedList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #teamMatchedList li {
+            background: rgba(165, 180, 252, 0.1);
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
             margin-bottom: 10px;
-            font-weight: bold;
-            color: #34495e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
         }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 18px;
-            box-sizing: border-box;
+
+        #teamMatchedList li:hover {
+            background: rgba(165, 180, 252, 0.2);
         }
-        input:focus, textarea:focus {
-            border-color: #3498db;
-            outline: none;
+
+        #teamMatchedList .name {
+            font-weight: 500;
         }
-        #hindiOutput {
-            background-color: #f8f9fa;
-            min-height: 100px;
-            resize: vertical;
-            font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-            direction: ltr;
+
+        #teamMatchedList .phone {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
         }
-        .example {
-            background: #e8f5e8;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-size: 16px;
+
+        #teamMatchedList .phone:hover {
+            text-decoration: underline;
+        }
+
+        .no-matches {
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🇮🇳 English to Hindi Name Converter</h1>
-        
-        <div class="input-group">
-            <label>English Name Likhiye:</label>
-            <input type="text" id="englishInput" placeholder="Rohit Sharma ya Prashant Das..." 
-                   oninput="convertToHindi()">
-        </div>
-        
-        <div class="input-group">
-            <label>Hindi Output (Auto):</label>
-            <textarea id="hindiOutput" readonly placeholder="Yahan Hindi dikhega..."></textarea>
-        </div>
-        
-        <div class="example">
-            <strong>Examples:</strong><br>
-            Rohit → रोहित<br>
-            Prashant Das → प्रशांत दास<br>
-            Amit Kumar → अमित कुमार
+
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+    <label class="theme-switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+        <span class="theme-label sun">☀️</span>
+        <span class="theme-label moon">🌙</span>
+    </label>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-7 col-lg-8 col-md-12">
+
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">Tehsil Wise Name Filter</h4>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Tehsil Dropdown -->
+                    <div class="mb-4">
+                        <label for="tehsil" class="form-label">Select Tehsil</label>
+                        <select id="tehsil" class="form-select form-select-lg">
+                            <option value="">-- Select Tehsil --</option>
+                            <option value="Firozabad">Firozabad</option>
+                            <option value="Shikohabad">Shikohabad</option>
+                            <option value="Tundla">Tundla</option>
+                            <option value="Jasrana">Jasrana</option>
+                            <option value="Sirsaganj">Sirsaganj</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Textarea -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="nameList" class="form-label mb-0">Paste Full Name List</label>
+                            <button id="clearInput" class="btn btn-sm btn-clear px-3 py-1">Clear</button>
+                        </div>
+                        <textarea id="nameList" class="form-control" rows="6"
+                            placeholder="Paste your full name list here... (one name per line)"></textarea>
+                    </div>
+
+                    <!-- Save Team List Button -->
+                    <div class="mb-4">
+                        <button class="btn btn-secondary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#teamModal">
+                            Save Team List
+                        </button>
+                    </div>
+
+                    <!-- Filter Button -->
+                    <div class="d-grid gap-3 mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="filterNames()">
+                            Filter Names
+                        </button>
+                    </div>
+
+                    <!-- Tehsil Filtered Output -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="result" class="form-label mb-0">Filtered Names (Tehsil)</label>
+                            <button id="clearOutput" class="btn btn-sm btn-clear px-3 py-1">Clear</button>
+                        </div>
+                        <textarea id="result" class="form-control" rows="6" readonly
+                            placeholder="Filtered names will appear here..."></textarea>
+                        <small id="resultCount" class="form-text text-muted mt-1 d-block">0 names found</small>
+                    </div>
+
+                    <!-- Matched Team Members (Clickable Phones) -->
+                    <div>
+                        <label class="form-label">Matched Team Members</label>
+                        <div id="teamMatchedList" class="mt-2"></div>
+                        <small id="teamCount" class="form-text text-muted mt-1 d-block">0 matches found</small>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
+</div>
 
-    <script>
-        function convertToHindi() {
-            // English input lete hain
-            var englishText = document.getElementById('englishInput').value;
-            
-            // Hindi me convert karte hain
-            var hindiText = englishToHindi(englishText);
-            
-            // Hindi output me daalte hain
-            document.getElementById('hindiOutput').value = hindiText;
-        }
+<!-- Team List Modal -->
+<div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teamModalLabel">Paste Team List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="teamList" class="form-control" rows="8"
+                    placeholder="Paste team list here... (Format: Name - Mobile per line, e.g., John Doe - 1234567890)"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveTeamList()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function englishToHindi(english) {
-            // Simple mapping - English letters ko Hindi me badalte hain
-            var mapping = {
-                // Swar (Vowels)
-                'a': 'अ', 'A': 'आ', 'i': 'इ', 'I': 'ई', 'u': 'उ', 'U': 'ऊ',
-                'e': 'ए', 'o': 'ओ',
-                
-                // Vyanjan (Consonants)
-                'k': 'क', 'K': 'ख', 'g': 'ग', 'G': 'घ', 'ng': 'ङ',
-                'c': 'च', 'C': 'छ', 'j': 'ज', 'J': 'झ', 'ny': 'ञ',
-                'T': 'ट', 't': 'त', 'D': 'ड', 'd': 'द', 'N': 'ण', 'n': 'न',
-                'p': 'प', 'P': 'फ', 'b': 'ब', 'B': 'भ', 'm': 'म',
-                'y': 'य', 'r': 'र', 'R': 'ड़', 'l': 'ल', 'v': 'व',
-                's': 'स', 'S': 'श', 'h': 'ह',
-                
-                // Special
-                "'": '्', ' ': ' ', '.': '।'
-            };
-            
-            var hindi = '';
-            var i = 0;
-            
-            while (i < english.length) {
-                var found = false;
-                
-                // 2-letter combinations check karte hain (jaise "ng")
-                for (var combo in mapping) {
-                    if (combo.length > 1 && english.substr(i, combo.length) === combo) {
-                        hindi += mapping[combo];
-                        i += combo.length;
-                        found = true;
-                        break;
-                    }
-                }
-                
-                if (!found) {
-                    // Single letter
-                    var char = english[i].toLowerCase();
-                    if (mapping[char]) {
-                        hindi += mapping[char];
-                    } else {
-                        hindi += english[i]; // Unknown ko waise hi rakhein
-                    }
-                    i++;
-                }
-            }
-            
-            return hindi;
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+// Theme Toggle Logic
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+
+function setTheme(theme) {
+    html.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeToggle.checked = (theme === 'light');
+}
+
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    setTheme(savedTheme);
+} else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+}
+
+themeToggle.addEventListener('change', () => {
+    setTheme(themeToggle.checked ? 'light' : 'dark');
+});
+
+// Elements
+const tehsilSelect = document.getElementById('tehsil');
+const nameList = document.getElementById('nameList');
+const result = document.getElementById('result');
+const resultCount = document.getElementById('resultCount');
+const teamMatchedList = document.getElementById('teamMatchedList');
+const teamCount = document.getElementById('teamCount');
+const teamListTextarea = document.getElementById('teamList');
+
+// Load saved data
+window.addEventListener('load', () => {
+    const savedTehsil = localStorage.getItem('selectedTehsil');
+    const savedInput = localStorage.getItem('nameListInput');
+    const savedOutput = localStorage.getItem('filteredOutput');
+    const savedTeam = sessionStorage.getItem('teamList');
+
+    if (savedTehsil) tehsilSelect.value = savedTehsil;
+    if (savedInput) nameList.value = savedInput;
+    if (savedOutput) {
+        result.value = savedOutput;
+        resultCount.textContent = `${savedOutput.split('\n').filter(Boolean).length} names found`;
+    }
+    if (savedTeam) {
+        teamListTextarea.value = savedTeam;
+    }
+});
+
+// Save on change
+tehsilSelect.addEventListener('change', () => localStorage.setItem('selectedTehsil', tehsilSelect.value));
+nameList.addEventListener('input', () => localStorage.setItem('nameListInput', nameList.value));
+
+// Clear buttons
+document.getElementById('clearInput').addEventListener('click', () => {
+    nameList.value = '';
+    localStorage.removeItem('nameListInput');
+});
+
+document.getElementById('clearOutput').addEventListener('click', () => {
+    result.value = '';
+    teamMatchedList.innerHTML = '';
+    resultCount.textContent = '0 names found';
+    teamCount.textContent = '0 matches found';
+    localStorage.removeItem('filteredOutput');
+});
+
+// Save Team List
+function saveTeamList() {
+    const teamData = teamListTextarea.value.trim();
+    if (teamData) {
+        sessionStorage.setItem('teamList', teamData);
+        bootstrap.Modal.getInstance(document.getElementById('teamModal')).hide();
+        alert('Team list saved!');
+    } else {
+        alert('Please paste team list first.');
+    }
+}
+
+function filterNames() {
+    const tehsil = tehsilSelect.value.trim();
+    const text = nameList.value.trim();
+
+    if (!tehsil) {
+        result.value = "⚠️ Please select a tehsil first.";
+        resultCount.textContent = '0 names found';
+        teamMatchedList.innerHTML = '<div class="no-matches">No team list loaded</div>';
+        teamCount.textContent = '0 matches found';
+        localStorage.setItem('filteredOutput', result.value);
+        return;
+    }
+
+    if (!text) {
+        result.value = "⚠️ Please paste some names first.";
+        resultCount.textContent = '0 names found';
+        teamMatchedList.innerHTML = '<div class="no-matches">No team list loaded</div>';
+        teamCount.textContent = '0 matches found';
+        localStorage.setItem('filteredOutput', result.value);
+        return;
+    }
+
+    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+    const searchTerm = `(${tehsil.toLowerCase()})`;
+
+    const filtered = lines.filter(line => line.toLowerCase().includes(searchTerm));
+
+    result.value = filtered.length 
+        ? filtered.join('\n')
+        : `No names found for "${tehsil}" tehsil.`;
+
+    resultCount.textContent = `${filtered.length} names found`;
+    localStorage.setItem('filteredOutput', result.value);
+
+    // Load team list
+    const teamData = sessionStorage.getItem('teamList');
+    if (!teamData) {
+        teamMatchedList.innerHTML = '<div class="no-matches">⚠️ No team list saved yet. Use the button to save one.</div>';
+        teamCount.textContent = '0 matches found';
+        return;
+    }
+
+    const teamLines = teamData.split('\n').map(line => line.trim()).filter(Boolean);
+    const teamMap = new Map(); // lowercase clean name -> {originalName, mobile}
+
+    teamLines.forEach(line => {
+        const [name, mobile] = line.split('-').map(part => part.trim());
+        if (name && mobile) {
+            const cleanName = name.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+            teamMap.set(cleanName, { originalName: name, mobile });
         }
-    </script>
+    });
+
+    const matched = [];
+    filtered.forEach(filteredLine => {
+        const cleanFilteredName = filteredLine.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+        if (teamMap.has(cleanFilteredName)) {
+            const { originalName, mobile } = teamMap.get(cleanFilteredName);
+            matched.push({ originalName, mobile });
+        }
+    });
+
+    // Render matched list with clickable phone numbers
+    if (matched.length === 0) {
+        teamMatchedList.innerHTML = '<div class="no-matches">No matches found in team list.</div>';
+    } else {
+        teamMatchedList.innerHTML = matched.map(item => `
+            <li>
+                <span class="name">${item.originalName}</span>
+                <a href="tel:${item.mobile}" class="phone">${item.mobile}</a>
+            </li>
+        `).join('');
+    }
+
+    teamCount.textContent = `${matched.length} matches found`;
+}
+</script>
+
 </body>
 </html>

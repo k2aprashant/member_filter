@@ -165,6 +165,50 @@
                 --card-bg: rgba(255, 255, 255, 0.95);
             }
         }
+
+        /* Matched List Styling */
+        #teamMatchedList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #teamMatchedList li {
+            background: rgba(165, 180, 252, 0.1);
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        #teamMatchedList li:hover {
+            background: rgba(165, 180, 252, 0.2);
+        }
+
+        #teamMatchedList .name {
+            font-weight: 500;
+        }
+
+        #teamMatchedList .phone {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #teamMatchedList .phone:hover {
+            text-decoration: underline;
+        }
+
+        .no-matches {
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -213,22 +257,36 @@
                             placeholder="Paste your full name list here... (one name per line)"></textarea>
                     </div>
 
-                    <!-- Buttons -->
+                    <!-- Save Team List Button -->
+                    <div class="mb-4">
+                        <button class="btn btn-secondary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#teamModal">
+                            Save Team List
+                        </button>
+                    </div>
+
+                    <!-- Filter Button -->
                     <div class="d-grid gap-3 mb-4">
                         <button class="btn btn-primary btn-lg" onclick="filterNames()">
                             Filter Names
                         </button>
                     </div>
 
-                    <!-- Output Textarea -->
-                    <div>
+                    <!-- Tehsil Filtered Output -->
+                    <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label for="result" class="form-label mb-0">Filtered Names</label>
+                            <label for="result" class="form-label mb-0">Filtered Names (Tehsil)</label>
                             <button id="clearOutput" class="btn btn-sm btn-clear px-3 py-1">Clear</button>
                         </div>
-                        <textarea id="result" class="form-control" rows="10" readonly
+                        <textarea id="result" class="form-control" rows="6" readonly
                             placeholder="Filtered names will appear here..."></textarea>
                         <small id="resultCount" class="form-text text-muted mt-1 d-block">0 names found</small>
+                    </div>
+
+                    <!-- Matched Team Members (Clickable Phones) -->
+                    <div>
+                        <label class="form-label">Matched Team Members</label>
+                        <div id="teamMatchedList" class="mt-2"></div>
+                        <small id="teamCount" class="form-text text-muted mt-1 d-block">0 matches found</small>
                     </div>
 
                 </div>
@@ -237,6 +295,29 @@
         </div>
     </div>
 </div>
+
+<!-- Team List Modal -->
+<div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teamModalLabel">Paste Team List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="teamList" class="form-control" rows="8"
+                    placeholder="Paste team list here... (Format: Name - Mobile per line, e.g., John Doe - 1234567890)"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveTeamList()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script>
 // Theme Toggle Logic
@@ -253,7 +334,6 @@ const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
     setTheme(savedTheme);
 } else {
-    // Auto-detect system preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(prefersDark ? 'dark' : 'light');
 }
@@ -262,23 +342,30 @@ themeToggle.addEventListener('change', () => {
     setTheme(themeToggle.checked ? 'light' : 'dark');
 });
 
-// Previous filter logic (unchanged)
+// Elements
 const tehsilSelect = document.getElementById('tehsil');
 const nameList = document.getElementById('nameList');
 const result = document.getElementById('result');
 const resultCount = document.getElementById('resultCount');
+const teamMatchedList = document.getElementById('teamMatchedList');
+const teamCount = document.getElementById('teamCount');
+const teamListTextarea = document.getElementById('teamList');
 
 // Load saved data
 window.addEventListener('load', () => {
     const savedTehsil = localStorage.getItem('selectedTehsil');
     const savedInput = localStorage.getItem('nameListInput');
     const savedOutput = localStorage.getItem('filteredOutput');
+    const savedTeam = sessionStorage.getItem('teamList');
 
     if (savedTehsil) tehsilSelect.value = savedTehsil;
     if (savedInput) nameList.value = savedInput;
     if (savedOutput) {
         result.value = savedOutput;
         resultCount.textContent = `${savedOutput.split('\n').filter(Boolean).length} names found`;
+    }
+    if (savedTeam) {
+        teamListTextarea.value = savedTeam;
     }
 });
 
@@ -294,9 +381,23 @@ document.getElementById('clearInput').addEventListener('click', () => {
 
 document.getElementById('clearOutput').addEventListener('click', () => {
     result.value = '';
+    teamMatchedList.innerHTML = '';
     resultCount.textContent = '0 names found';
+    teamCount.textContent = '0 matches found';
     localStorage.removeItem('filteredOutput');
 });
+
+// Save Team List
+function saveTeamList() {
+    const teamData = teamListTextarea.value.trim();
+    if (teamData) {
+        sessionStorage.setItem('teamList', teamData);
+        bootstrap.Modal.getInstance(document.getElementById('teamModal')).hide();
+        alert('Team list saved!');
+    } else {
+        alert('Please paste team list first.');
+    }
+}
 
 function filterNames() {
     const tehsil = tehsilSelect.value.trim();
@@ -305,6 +406,8 @@ function filterNames() {
     if (!tehsil) {
         result.value = "⚠️ Please select a tehsil first.";
         resultCount.textContent = '0 names found';
+        teamMatchedList.innerHTML = '<div class="no-matches">No team list loaded</div>';
+        teamCount.textContent = '0 matches found';
         localStorage.setItem('filteredOutput', result.value);
         return;
     }
@@ -312,6 +415,8 @@ function filterNames() {
     if (!text) {
         result.value = "⚠️ Please paste some names first.";
         resultCount.textContent = '0 names found';
+        teamMatchedList.innerHTML = '<div class="no-matches">No team list loaded</div>';
+        teamCount.textContent = '0 matches found';
         localStorage.setItem('filteredOutput', result.value);
         return;
     }
@@ -327,6 +432,48 @@ function filterNames() {
 
     resultCount.textContent = `${filtered.length} names found`;
     localStorage.setItem('filteredOutput', result.value);
+
+    // Load team list
+    const teamData = sessionStorage.getItem('teamList');
+    if (!teamData) {
+        teamMatchedList.innerHTML = '<div class="no-matches">⚠️ No team list saved yet. Use the button to save one.</div>';
+        teamCount.textContent = '0 matches found';
+        return;
+    }
+
+    const teamLines = teamData.split('\n').map(line => line.trim()).filter(Boolean);
+    const teamMap = new Map(); // lowercase clean name -> {originalName, mobile}
+
+    teamLines.forEach(line => {
+        const [name, mobile] = line.split('-').map(part => part.trim());
+        if (name && mobile) {
+            const cleanName = name.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+            teamMap.set(cleanName, { originalName: name, mobile });
+        }
+    });
+
+    const matched = [];
+    filtered.forEach(filteredLine => {
+        const cleanFilteredName = filteredLine.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+        if (teamMap.has(cleanFilteredName)) {
+            const { originalName, mobile } = teamMap.get(cleanFilteredName);
+            matched.push({ originalName, mobile });
+        }
+    });
+
+    // Render matched list with clickable phone numbers
+    if (matched.length === 0) {
+        teamMatchedList.innerHTML = '<div class="no-matches">No matches found in team list.</div>';
+    } else {
+        teamMatchedList.innerHTML = matched.map(item => `
+            <li>
+                <span class="name">${item.originalName}</span>
+                <a href="tel:${item.mobile}" class="phone">${item.mobile}</a>
+            </li>
+        `).join('');
+    }
+
+    teamCount.textContent = `${matched.length} matches found`;
 }
 </script>
 
