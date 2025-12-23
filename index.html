@@ -1,520 +1,334 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Member Filter</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tehsil Wise Name Filter</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #4895ef;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --text: #e2e8f0;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.85);
+        }
+
+        [data-bs-theme="light"] {
+            --text: #1e293b;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fa;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: none;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(165, 180, 252, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            transition: all 0.4s ease;
         }
 
         .card-header {
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 12px 12px 0 0 !important;
-            padding: 1.2rem;
+            background: rgba(99, 102, 241, 0.15);
+            border-bottom: 1px solid rgba(165, 180, 252, 0.2);
         }
 
-        .filter-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+        .form-select, .form-control {
+            background-color: rgba(165, 180, 252, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            border-radius: 10px;
         }
 
-        .filter-container textarea {
-            border-radius: 8px;
-            border: 1px solid #ced4da;
-            padding: 10px;
-            flex-grow: 1;
-        }
-
-        .filter-container textarea:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-        }
-
-        .btn-filter {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-filter:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .result-item {
+        [data-bs-theme="light"] .form-select,
+        [data-bs-theme="light"] .form-control {
             background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.3s ease;
+            border-color: #cbd5e1;
         }
 
-        .result-item:hover {
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
         }
 
-        .code {
-            font-family: 'Courier New', monospace;
-            background-color: #f8f9fa;
-            padding: 5px 10px;
-            border-radius: 4px;
-            color: var(--dark-color);
+        .form-control::placeholder {
+            color: #94a3b8;
         }
 
-        .mobile-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .btn-primary {
+            background: var(--primary);
+            border: none;
         }
 
-        .mobile-number {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
+        .btn-primary:hover {
+            background: var(--primary-dark);
         }
 
-        .btn-copy {
-            background-color: var(--light-color);
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            color: var(--dark-color);
-            transition: all 0.2s ease;
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid #ef4444;
         }
 
-        .btn-copy:hover {
-            background-color: var(--accent-color);
+        .btn-clear:hover {
+            background: #ef4444;
             color: white;
         }
 
-        .copy-success {
-            color: #28a745;
-            font-size: 0.8rem;
-            margin-left: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .copy-success.show {
-            opacity: 1;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 20px;
-            color: #6c757d;
-        }
-
-        @media (max-width: 768px) {
-            .filter-container {
-                flex-direction: column;
-            }
-
-            .filter-container textarea {
-                width: 100%;
-            }
-
-            .result-item {
-                padding: 12px;
-            }
-        }
-
-        .hide_karo {
-            display: none;
-        }
-
-        #copyMessage {
+        /* Theme Toggle */
+        .theme-toggle {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            display: none;
+            top: 1rem;
+            right: 1rem;
             z-index: 1000;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .theme-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            pointer-events: none;
+        }
+
+        .theme-label.sun { left: 8px; }
+        .theme-label.moon { right: 8px; }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-bs-theme="dark"]) {
+                --text: #1e293b;
+                --bg: #f8fafc;
+                --card-bg: rgba(255, 255, 255, 0.95);
+            }
         }
     </style>
 </head>
-
 <body>
-    <div id="copyMessage"></div>
-    <div class="container py-5">
 
-        <div class="card mb-3">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Form Url</h3>
-            </div>
-            <div class="row p-3">
-                <div class="col-md-8 mb-md-0 mb-3">
-                    <input type="url" class="form-control form-control-lg" id="formUrl" placeholder="Enter Form Url">
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+    <label class="theme-switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+        <span class="theme-label sun">☀️</span>
+        <span class="theme-label moon">🌙</span>
+    </label>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-7 col-lg-8 col-md-10">
+
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">Tehsil Wise Name Filter</h4>
                 </div>
-                <div class="col-md-4 d-flex justify-content-center align-items-center">
-                    <button id="gotoFormLink" class="btn btn-block w-100 text-light"
-                        style="background-color: rgb(1, 1, 153);">
-                        Open Form
-                    </button>
-                </div>
-            </div>
-        </div>
 
+                <div class="card-body p-4 p-md-5">
 
-        <div class="card">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Contact Filter</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="filter-container">
-                            <textarea id="data1" class="form-control" rows="5"
-                                placeholder="FZ03 त्रिवेन्द्र दास, यह फ़ॉर्मेट है। कृपया ग्रुप से प्राप्त लिस्ट को इसी फ़ॉर्मेट में डालें या पेस्ट करें। 🙏"></textarea>
-                        </div>
+                    <!-- Tehsil Dropdown -->
+                    <div class="mb-4">
+                        <label for="tehsil" class="form-label">Select Tehsil</label>
+                        <select id="tehsil" class="form-select form-select-lg">
+                            <option value="">-- Select Tehsil --</option>
+                            <option value="Firozabad">Firozabad</option>
+                            <option value="Shikohabad">Shikohabad</option>
+                            <option value="Tundla">Tundla</option>
+                            <option value="Jasrana">Jasrana</option>
+                            <option value="Sirsaganj">Sirsaganj</option>
+                        </select>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <div class="filter-container">
-                            <textarea id="data2" class="form-control" rows="5"
-                                placeholder="कृपया यहाँ वह लिस्ट डालें जो आपको दी गई है। लिस्ट का फ़ॉर्मेट इस प्रकार होना चाहिए: 1 त्रिवेन्द्र दास 9058011115"></textarea>
+                    <!-- Input Textarea -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="nameList" class="form-label mb-0">Paste Full Name List</label>
+                            <button id="clearInput" class="btn btn-sm btn-clear px-3 py-1">Clear</button>
                         </div>
+                        <textarea id="nameList" class="form-control" rows="6"
+                            placeholder="Paste your full name list here... (one name per line)"></textarea>
                     </div>
+
+                    <!-- Buttons -->
+                    <div class="d-grid gap-3 mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="filterNames()">
+                            Filter Names
+                        </button>
+                    </div>
+
+                    <!-- Output Textarea -->
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="result" class="form-label mb-0">Filtered Names</label>
+                            <button id="clearOutput" class="btn btn-sm btn-clear px-3 py-1">Clear</button>
+                        </div>
+                        <textarea id="result" class="form-control" rows="6" readonly
+                            placeholder="Filtered names will appear here..."></textarea>
+                        <small id="resultCount" class="form-text text-muted mt-1 d-block">0 names found</small>
+                    </div>
+
                 </div>
-                <button id="matchButton" class="btn btn-filter">
-                    <i class="fas fa-search"></i>
-                </button>
-                <button id="clearForm" class="btn btn-filter" style="background-color: red;">
-                    <i class="fas fa-broom"></i>
-                </button>
-                <button id="feedback" class="btn btn-filter" style="background-color: rgb(0, 220, 0);">
-                    <i class="far fa-comment-dots"></i>
-                </button>
             </div>
-        </div>
 
-        <div class="card mt-4 p-3 hide_karo" id="matchResults">
-            <div class="card-body">
-                <div id="data3" class="mt-4"></div>
-                <button class="btn btn-filter mt-3" id="readyReport" style="background-color: #28a745;">Report</button>
-            </div>
-        </div>
-
-        <div class="card mt-4 p-3 hide_karo" id="feedbackResults">
-            <div class="card-body">
-                <div id="feedbackData" class="mt-4"></div>
-                <button class="btn btn-filter mt-3" id="readyFeedbackReport" style="background-color: #28a745;">Ready
-                    Feedback Report</button>
-            </div>
-        </div>
-
-        <div class="card mt-4 p-3 hide_karo" id="reportCard">
-            <div class="card-body">
-                <h4>Final Report</h4>
-                <textarea id="reportOutput" class="form-control" rows="10"
-                    placeholder="Report will appear here"></textarea>
-                <button class="btn btn-filter mt-3" id="copyButton" style="background-color: #3f37c9;">Copy
-                    Report</button>
-            </div>
         </div>
     </div>
+</div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function () {
+<script>
+// Theme Toggle Logic
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
 
-            // Load saved data if exists
-            if (localStorage.getItem("data2")) {
-                $("#data2").val(localStorage.getItem("data2"));
-            }
+function setTheme(theme) {
+    html.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeToggle.checked = (theme === 'light');
+}
 
-            if (localStorage.getItem("data1")) {
-                $("#data1").val(localStorage.getItem("data1"));
-            }
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    setTheme(savedTheme);
+} else {
+    // Auto-detect system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+}
 
-            // Save data as user types
-            $("#data2").on("input", function () {
-                localStorage.setItem("data2", $(this).val().trim());
-            });
+themeToggle.addEventListener('change', () => {
+    setTheme(themeToggle.checked ? 'light' : 'dark');
+});
 
-            $("#data1").on("input", function () {
-                localStorage.setItem("data1", $(this).val().trim());
-            });
+// Previous filter logic (unchanged)
+const tehsilSelect = document.getElementById('tehsil');
+const nameList = document.getElementById('nameList');
+const result = document.getElementById('result');
+const resultCount = document.getElementById('resultCount');
 
-            $("#matchButton").click(function () {
-                if ($("#data1").val().trim() == "" || $("#data2").val().trim() == "") {
-                    alert("Please enter data in both boxes first");
-                    return;
-                }
+// Load saved data
+window.addEventListener('load', () => {
+    const savedTehsil = localStorage.getItem('selectedTehsil');
+    const savedInput = localStorage.getItem('nameListInput');
+    const savedOutput = localStorage.getItem('filteredOutput');
 
-                $("#matchResults").show();
-                $("#feedbackResults").hide();
-                let data1Input = $("#data1").val().trim().split("\n").filter(line => line.trim() !== "");
-                let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
-                $("#data3").html("");
-                let data3 = [];
+    if (savedTehsil) tehsilSelect.value = savedTehsil;
+    if (savedInput) nameList.value = savedInput;
+    if (savedOutput) {
+        result.value = savedOutput;
+        resultCount.textContent = `${savedOutput.split('\n').filter(Boolean).length} names found`;
+    }
+});
 
-                // Function to extract FZ code and name from Data 1
-                function getFZCodeAndNameFromData1(item) {
-                    let parts = item.trim().split(" ");
-                    let fzCode = parts[0]; // FZ code (e.g., FZ03)
-                    let name = parts.slice(1).join(" ").trim();
-                    return { fzCode, name };
-                }
+// Save on change
+tehsilSelect.addEventListener('change', () => localStorage.setItem('selectedTehsil', tehsilSelect.value));
+nameList.addEventListener('input', () => localStorage.setItem('nameListInput', nameList.value));
 
-                // Function to extract name from Data 2 (remove phone number)
-                function getNameFromData2(item) {
-                    // Extract mobile number (10 or 11 digits)
-                    let mobileMatch = item.match(/\d{10,11}/);
-                    let mobile = mobileMatch ? mobileMatch[0] : "";
+// Clear buttons
+document.getElementById('clearInput').addEventListener('click', () => {
+    nameList.value = '';
+    localStorage.removeItem('nameListInput');
+});
 
-                    // Remove leading numbers and mobile number, keep name exactly as is
-                    let name = item.replace(/^\d+\s+/, "") // Remove starting numbers
-                        .replace(/\d{10,11}/, "") // Remove phone number
-                        .trim();
-                    return { name, mobile };
-                }
+document.getElementById('clearOutput').addEventListener('click', () => {
+    result.value = '';
+    resultCount.textContent = '0 names found';
+    localStorage.removeItem('filteredOutput');
+});
 
-                // EXACT MATCHING LOGIC
-                $.each(data1Input, function (index1, item1) {
-                    let { fzCode, name: name1 } = getFZCodeAndNameFromData1(item1);
+function filterNames() {
+    const tehsil = tehsilSelect.value.trim();
+    const text = nameList.value.trim();
 
-                    $.each(data2Input, function (index2, item2) {
-                        let { name: name2, mobile } = getNameFromData2(item2);
+    if (!tehsil) {
+        result.value = "⚠️ Please select a tehsil first.";
+        resultCount.textContent = '0 names found';
+        localStorage.setItem('filteredOutput', result.value);
+        return;
+    }
 
-                        // EXACT MATCH ONLY (including numbers like "2" at the end)
-                        if (name1 === name2) {
-                            const resultItem = `
-                                <div class="result-item">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-3">
-                                            <div class="mb-2 mb-md-0">
-                                                <strong>Code:</strong> <span class="code">${fzCode}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-2 mb-md-0">
-                                                <strong>Name:</strong> <span class="name001">${name2}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mobile-container">
-                                                <a href="tel:${mobile}" class="mobile-number">
-                                                    <i class="fas fa-phone-alt me-1"></i> <span class="">${mobile}</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-2 mb-md-0">
-                                                <input type="text" class="form-control reason001" placeholder="Enter Your Reasons"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                `;
-                            $("#data3").append(resultItem);
-                        }
-                    });
-                });
+    if (!text) {
+        result.value = "⚠️ Please paste some names first.";
+        resultCount.textContent = '0 names found';
+        localStorage.setItem('filteredOutput', result.value);
+        return;
+    }
 
-                if ($("#data3").children().length === 0) {
-                    $("#data3").html('<div class="no-results">No matches found.</div>');
-                }
-            });
+    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+    const searchTerm = `(${tehsil.toLowerCase()})`;
 
-            $("#feedback").click(function () {
-                if ($("#data2").val().trim() == "") {
-                    alert("Please enter data in the second box first");
-                    return;
-                }
+    const filtered = lines.filter(line => line.toLowerCase().includes(searchTerm));
 
-                $("#feedbackResults").show();
-                $("#matchResults").hide();
-                let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
-                $("#feedbackData").html("");
+    result.value = filtered.length 
+        ? filtered.join('\n')
+        : `No names found for "${tehsil}" tehsil.`;
 
-                // Function to extract name from Data 2
-                function getNameFromData2(item) {
-                    // Extract mobile number (10 or 11 digits)
-                    let mobileMatch = item.match(/\d{10,11}/);
-                    let mobile = mobileMatch ? mobileMatch[0] : "";
+    resultCount.textContent = `${filtered.length} names found`;
+    localStorage.setItem('filteredOutput', result.value);
+}
+</script>
 
-                    // Remove leading numbers and mobile number, keep name exactly as is
-                    let name = item.replace(/^\d+\s+/, "") // Remove starting numbers
-                        .replace(/\d{10,11}/, "") // Remove phone number
-                        .trim();
-                    return { name, mobile };
-                }
-
-                // Display all names from data2 with input fields
-                $.each(data2Input, function (index, item) {
-                    let { name, mobile } = getNameFromData2(item);
-                    const feedbackItem = `
-                        <div class="result-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <div class="mb-2 mb-md-0">
-                                        <strong>Name:</strong> <span class="name002">${name}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-2 mb-md-0">
-                                        <input type="text" class="form-control reason002" placeholder="Enter Your Reason"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    $("#feedbackData").append(feedbackItem);
-                });
-
-                if ($("#feedbackData").children().length === 0) {
-                    $("#feedbackData").html('<div class="no-results">No data found.</div>');
-                }
-            });
-
-            $("#readyReport").click(function () {
-                let reportOutput = $('.result-item').length;
-                if (reportOutput == 0 || reportOutput == "") {
-                    alert('Please filter data first');
-                    return false;
-                }
-
-                $("#reportCard").show();
-                let report = ["भक्तो की लिस्ट जिन्होंने फॉर्म नहीं भरा➖ फिरोजाबाद\n▬▬▬▬▬▬▬\n"];
-                // Collect data from each box
-                $('.result-item').each(function () {
-                    let code = $(this).find('.code').text();
-                    let name = $(this).find('.name001').text();
-                    let reason = $(this).find('.reason001').val() || 'No reason provided';
-
-                    // Create formatted entry
-                    let entry = `${code} ${name} ➖ ${reason}`;
-                    report.push(entry);
-                });
-
-                // Display in textarea
-                let formattedReport = report.join('\n');
-                $("#reportOutput").val(formattedReport);
-            });
-
-            $("#readyFeedbackReport").click(function () {
-                let reportOutput = $('#feedbackData .result-item').length;
-                if (reportOutput == 0 || reportOutput == "") {
-                    alert('Please click Feedback button first');
-                    return false;
-                }
-
-                $("#reportCard").show();
-                // let report = [`भक्तो की फीडबैक लिस्ट ➖ फिरोजाबाद\n▬▬▬▬▬▬▬\n`];
-                let report = [`*विशेष संदेश से संबंधित भक्तों की आज की सेवा की लिस्ट फिरोजाबाद* \n▬▬▬▬▬▬▬\n`];
-
-                // Collect data from feedback items
-                $('#feedbackData .result-item').each(function () {
-                    let name = $(this).find('.name002').text();
-                    let reason = $(this).find('.reason002').val() || 'No reason provided';
-
-                    // Create formatted entry
-                    let entry = `${name} ➖ ${reason}`;
-                    report.push(entry);
-                });
-
-                // Display in textarea
-                let formattedReport = report.join('\n');
-                $("#reportOutput").val(formattedReport);
-            });
-
-            function showMessage(msg, bgColor = "#28a745") {
-                let messageBox = $("#copyMessage");
-                messageBox.text(msg).css("background", bgColor).fadeIn().delay(1500).fadeOut();
-            }
-
-            $("#copyButton").click(function () {
-                let textarea = $("#reportOutput");
-                textarea.select();
-                document.execCommand("copy");
-                showMessage("Text copied successfully!");
-            });
-
-            $("#clearForm").click(function () {
-                $('#data1').val('');
-                localStorage.removeItem("data1");
-                $("#data3").html("");
-                $("#feedbackData").html("");
-                $("#reportOutput").val("");
-                $(".hide_karo").hide();
-            });
-
-
-            function isValidUrl(url) {
-                let pattern = new RegExp(
-                    '^(https?:\\/\\/)?' +                  // protocol optional
-                    '((([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,})|' + // domain
-                    'localhost|' +                        // localhost
-                    '\\d{1,3}(\\.\\d{1,3}){3})' +          // OR ip (v4)
-                    '(\\:\\d+)?' +                         // port optional
-                    '(\\/[-a-zA-Z0-9%_.~+]*)*' +           // path optional
-                    '(\\?[;&a-zA-Z0-9%_.~+=-]*)?' +        // query string optional
-                    '(\\#[-a-zA-Z0-9_]*)?$', 'i'            // fragment optional
-                );
-                return !!pattern.test(url);
-            }
-
-            if (localStorage.getItem("formUrl")) {
-                $("#formUrl").val(localStorage.getItem("formUrl"));
-            }
-
-            $("#formUrl").on("input", function () {
-                console.log( $(this).val().trim());
-                localStorage.setItem("formUrl", $(this).val().trim());
-            });
-
-            $("#gotoFormLink").click(function () {
-                let getUrl = $('#formUrl').val().trim();
-
-                if (getUrl == ""){ return; }
-
-                if (isValidUrl(getUrl)) {
-                    // window.location.href = getUrl;
-                    window.open(getUrl, '_blank')
-                    return
-                } else {
-                    alert("❌ Invalid URL. Please enter a correct one.");
-                }
-            });
-
-        });
-    </script>
 </body>
-
 </html>

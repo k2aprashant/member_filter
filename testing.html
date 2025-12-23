@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>English to Hindi Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        #hindiOutput {
+            background-color: #f8f9fa;
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+            direction: ltr;
+        }
+        .example {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇮🇳 English to Hindi Name Converter</h1>
+        
+        <div class="input-group">
+            <label>English Name Likhiye:</label>
+            <input type="text" id="englishInput" placeholder="Rohit Sharma ya Prashant Das..." 
+                   oninput="convertToHindi()">
+        </div>
+        
+        <div class="input-group">
+            <label>Hindi Output (Auto):</label>
+            <textarea id="hindiOutput" readonly placeholder="Yahan Hindi dikhega..."></textarea>
+        </div>
+        
+        <div class="example">
+            <strong>Examples:</strong><br>
+            Rohit → रोहित<br>
+            Prashant Das → प्रशांत दास<br>
+            Amit Kumar → अमित कुमार
+        </div>
+    </div>
+
+    <script>
+        function convertToHindi() {
+            // English input lete hain
+            var englishText = document.getElementById('englishInput').value;
+            
+            // Hindi me convert karte hain
+            var hindiText = englishToHindi(englishText);
+            
+            // Hindi output me daalte hain
+            document.getElementById('hindiOutput').value = hindiText;
+        }
+
+        function englishToHindi(english) {
+            // Simple mapping - English letters ko Hindi me badalte hain
+            var mapping = {
+                // Swar (Vowels)
+                'a': 'अ', 'A': 'आ', 'i': 'इ', 'I': 'ई', 'u': 'उ', 'U': 'ऊ',
+                'e': 'ए', 'o': 'ओ',
+                
+                // Vyanjan (Consonants)
+                'k': 'क', 'K': 'ख', 'g': 'ग', 'G': 'घ', 'ng': 'ङ',
+                'c': 'च', 'C': 'छ', 'j': 'ज', 'J': 'झ', 'ny': 'ञ',
+                'T': 'ट', 't': 'त', 'D': 'ड', 'd': 'द', 'N': 'ण', 'n': 'न',
+                'p': 'प', 'P': 'फ', 'b': 'ब', 'B': 'भ', 'm': 'म',
+                'y': 'य', 'r': 'र', 'R': 'ड़', 'l': 'ल', 'v': 'व',
+                's': 'स', 'S': 'श', 'h': 'ह',
+                
+                // Special
+                "'": '्', ' ': ' ', '.': '।'
+            };
+            
+            var hindi = '';
+            var i = 0;
+            
+            while (i < english.length) {
+                var found = false;
+                
+                // 2-letter combinations check karte hain (jaise "ng")
+                for (var combo in mapping) {
+                    if (combo.length > 1 && english.substr(i, combo.length) === combo) {
+                        hindi += mapping[combo];
+                        i += combo.length;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    // Single letter
+                    var char = english[i].toLowerCase();
+                    if (mapping[char]) {
+                        hindi += mapping[char];
+                    } else {
+                        hindi += english[i]; // Unknown ko waise hi rakhein
+                    }
+                    i++;
+                }
+            }
+            
+            return hindi;
+        }
+    </script>
+</body>
+</html>

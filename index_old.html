@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Filter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1.2rem;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-container textarea {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            flex-grow: 1;
+        }
+
+        .filter-container textarea:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-filter {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-filter:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .result-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: var(--dark-color);
+        }
+
+        .mobile-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-number {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-copy {
+            background-color: var(--light-color);
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            color: var(--dark-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .copy-success {
+            color: #28a745;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-success.show {
+            opacity: 1;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .filter-container {
+                flex-direction: column;
+            }
+
+            .filter-container textarea {
+                width: 100%;
+            }
+
+            .result-item {
+                padding: 12px;
+            }
+        }
+
+        .hide_karo {
+            display: none;
+        }
+
+        #copyMessage {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="copyMessage"></div>
+    <div class="container py-5">
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Form Url</h3>
+            </div>
+            <div class="row p-3">
+                <div class="col-md-8 mb-md-0 mb-3">
+                    <input type="url" class="form-control form-control-lg" id="formUrl" placeholder="Enter Form Url">
+                </div>
+                <div class="col-md-4 d-flex justify-content-center align-items-center">
+                    <button id="gotoFormLink" class="btn btn-block w-100 text-light"
+                        style="background-color: rgb(1, 1, 153);">
+                        Open Form
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Contact Filter</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="filter-container">
+                            <textarea id="data1" class="form-control" rows="5"
+                                placeholder="FZ03 त्रिवेन्द्र दास, यह फ़ॉर्मेट है। कृपया ग्रुप से प्राप्त लिस्ट को इसी फ़ॉर्मेट में डालें या पेस्ट करें। 🙏"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="filter-container">
+                            <textarea id="data2" class="form-control" rows="5"
+                                placeholder="कृपया यहाँ वह लिस्ट डालें जो आपको दी गई है। लिस्ट का फ़ॉर्मेट इस प्रकार होना चाहिए: 1 त्रिवेन्द्र दास 9058011115"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button id="matchButton" class="btn btn-filter">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button id="clearForm" class="btn btn-filter" style="background-color: red;">
+                    <i class="fas fa-broom"></i>
+                </button>
+                <button id="feedback" class="btn btn-filter" style="background-color: rgb(0, 220, 0);">
+                    <i class="far fa-comment-dots"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card mt-4 p-3 hide_karo" id="matchResults">
+            <div class="card-body">
+                <div id="data3" class="mt-4"></div>
+                <button class="btn btn-filter mt-3" id="readyReport" style="background-color: #28a745;">Report</button>
+            </div>
+        </div>
+
+        <div class="card mt-4 p-3 hide_karo" id="feedbackResults">
+            <div class="card-body">
+                <div id="feedbackData" class="mt-4"></div>
+                <button class="btn btn-filter mt-3" id="readyFeedbackReport" style="background-color: #28a745;">Ready
+                    Feedback Report</button>
+            </div>
+        </div>
+
+        <div class="card mt-4 p-3 hide_karo" id="reportCard">
+            <div class="card-body">
+                <h4>Final Report</h4>
+                <textarea id="reportOutput" class="form-control" rows="10"
+                    placeholder="Report will appear here"></textarea>
+                <button class="btn btn-filter mt-3" id="copyButton" style="background-color: #3f37c9;">Copy
+                    Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Load saved data if exists
+            if (localStorage.getItem("data2")) {
+                $("#data2").val(localStorage.getItem("data2"));
+            }
+
+            if (localStorage.getItem("data1")) {
+                $("#data1").val(localStorage.getItem("data1"));
+            }
+
+            // Save data as user types
+            $("#data2").on("input", function () {
+                localStorage.setItem("data2", $(this).val().trim());
+            });
+
+            $("#data1").on("input", function () {
+                localStorage.setItem("data1", $(this).val().trim());
+            });
+
+            $("#matchButton").click(function () {
+                if ($("#data1").val().trim() == "" || $("#data2").val().trim() == "") {
+                    alert("Please enter data in both boxes first");
+                    return;
+                }
+
+                $("#matchResults").show();
+                $("#feedbackResults").hide();
+                let data1Input = $("#data1").val().trim().split("\n").filter(line => line.trim() !== "");
+                let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
+                $("#data3").html("");
+                let data3 = [];
+
+                // Function to extract FZ code and name from Data 1
+                function getFZCodeAndNameFromData1(item) {
+                    let parts = item.trim().split(" ");
+                    let fzCode = parts[0]; // FZ code (e.g., FZ03)
+                    let name = parts.slice(1).join(" ").trim();
+                    return { fzCode, name };
+                }
+
+                // Function to extract name from Data 2 (remove phone number)
+                function getNameFromData2(item) {
+                    // Extract mobile number (10 or 11 digits)
+                    let mobileMatch = item.match(/\d{10,11}/);
+                    let mobile = mobileMatch ? mobileMatch[0] : "";
+
+                    // Remove leading numbers and mobile number, keep name exactly as is
+                    let name = item.replace(/^\d+\s+/, "") // Remove starting numbers
+                        .replace(/\d{10,11}/, "") // Remove phone number
+                        .trim();
+                    return { name, mobile };
+                }
+
+                // EXACT MATCHING LOGIC
+                $.each(data1Input, function (index1, item1) {
+                    let { fzCode, name: name1 } = getFZCodeAndNameFromData1(item1);
+
+                    $.each(data2Input, function (index2, item2) {
+                        let { name: name2, mobile } = getNameFromData2(item2);
+
+                        // EXACT MATCH ONLY (including numbers like "2" at the end)
+                        if (name1 === name2) {
+                            const resultItem = `
+                                <div class="result-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <div class="mb-2 mb-md-0">
+                                                <strong>Code:</strong> <span class="code">${fzCode}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-2 mb-md-0">
+                                                <strong>Name:</strong> <span class="name001">${name2}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mobile-container">
+                                                <a href="tel:${mobile}" class="mobile-number">
+                                                    <i class="fas fa-phone-alt me-1"></i> <span class="">${mobile}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-2 mb-md-0">
+                                                <input type="text" class="form-control reason001" placeholder="Enter Your Reasons"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                            $("#data3").append(resultItem);
+                        }
+                    });
+                });
+
+                if ($("#data3").children().length === 0) {
+                    $("#data3").html('<div class="no-results">No matches found.</div>');
+                }
+            });
+
+            $("#feedback").click(function () {
+                if ($("#data2").val().trim() == "") {
+                    alert("Please enter data in the second box first");
+                    return;
+                }
+
+                $("#feedbackResults").show();
+                $("#matchResults").hide();
+                let data2Input = $("#data2").val().trim().split("\n").filter(line => line.trim() !== "");
+                $("#feedbackData").html("");
+
+                // Function to extract name from Data 2
+                function getNameFromData2(item) {
+                    // Extract mobile number (10 or 11 digits)
+                    let mobileMatch = item.match(/\d{10,11}/);
+                    let mobile = mobileMatch ? mobileMatch[0] : "";
+
+                    // Remove leading numbers and mobile number, keep name exactly as is
+                    let name = item.replace(/^\d+\s+/, "") // Remove starting numbers
+                        .replace(/\d{10,11}/, "") // Remove phone number
+                        .trim();
+                    return { name, mobile };
+                }
+
+                // Display all names from data2 with input fields
+                $.each(data2Input, function (index, item) {
+                    let { name, mobile } = getNameFromData2(item);
+                    const feedbackItem = `
+                        <div class="result-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="mb-2 mb-md-0">
+                                        <strong>Name:</strong> <span class="name002">${name}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2 mb-md-0">
+                                        <input type="text" class="form-control reason002" placeholder="Enter Your Reason"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $("#feedbackData").append(feedbackItem);
+                });
+
+                if ($("#feedbackData").children().length === 0) {
+                    $("#feedbackData").html('<div class="no-results">No data found.</div>');
+                }
+            });
+
+            $("#readyReport").click(function () {
+                let reportOutput = $('.result-item').length;
+                if (reportOutput == 0 || reportOutput == "") {
+                    alert('Please filter data first');
+                    return false;
+                }
+
+                $("#reportCard").show();
+                let report = ["भक्तो की लिस्ट जिन्होंने फॉर्म नहीं भरा➖ फिरोजाबाद\n▬▬▬▬▬▬▬\n"];
+                // Collect data from each box
+                $('.result-item').each(function () {
+                    let code = $(this).find('.code').text();
+                    let name = $(this).find('.name001').text();
+                    let reason = $(this).find('.reason001').val() || 'No reason provided';
+
+                    // Create formatted entry
+                    let entry = `${code} ${name} ➖ ${reason}`;
+                    report.push(entry);
+                });
+
+                // Display in textarea
+                let formattedReport = report.join('\n');
+                $("#reportOutput").val(formattedReport);
+            });
+
+            $("#readyFeedbackReport").click(function () {
+                let reportOutput = $('#feedbackData .result-item').length;
+                if (reportOutput == 0 || reportOutput == "") {
+                    alert('Please click Feedback button first');
+                    return false;
+                }
+
+                $("#reportCard").show();
+                // let report = [`भक्तो की फीडबैक लिस्ट ➖ फिरोजाबाद\n▬▬▬▬▬▬▬\n`];
+                let report = [`*विशेष संदेश से संबंधित भक्तों की आज की सेवा की लिस्ट फिरोजाबाद* \n▬▬▬▬▬▬▬\n`];
+
+                // Collect data from feedback items
+                $('#feedbackData .result-item').each(function () {
+                    let name = $(this).find('.name002').text();
+                    let reason = $(this).find('.reason002').val() || 'No reason provided';
+
+                    // Create formatted entry
+                    let entry = `${name} ➖ ${reason}`;
+                    report.push(entry);
+                });
+
+                // Display in textarea
+                let formattedReport = report.join('\n');
+                $("#reportOutput").val(formattedReport);
+            });
+
+            function showMessage(msg, bgColor = "#28a745") {
+                let messageBox = $("#copyMessage");
+                messageBox.text(msg).css("background", bgColor).fadeIn().delay(1500).fadeOut();
+            }
+
+            $("#copyButton").click(function () {
+                let textarea = $("#reportOutput");
+                textarea.select();
+                document.execCommand("copy");
+                showMessage("Text copied successfully!");
+            });
+
+            $("#clearForm").click(function () {
+                $('#data1').val('');
+                localStorage.removeItem("data1");
+                $("#data3").html("");
+                $("#feedbackData").html("");
+                $("#reportOutput").val("");
+                $(".hide_karo").hide();
+            });
+
+
+            function isValidUrl(url) {
+                let pattern = new RegExp(
+                    '^(https?:\\/\\/)?' +                  // protocol optional
+                    '((([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,})|' + // domain
+                    'localhost|' +                        // localhost
+                    '\\d{1,3}(\\.\\d{1,3}){3})' +          // OR ip (v4)
+                    '(\\:\\d+)?' +                         // port optional
+                    '(\\/[-a-zA-Z0-9%_.~+]*)*' +           // path optional
+                    '(\\?[;&a-zA-Z0-9%_.~+=-]*)?' +        // query string optional
+                    '(\\#[-a-zA-Z0-9_]*)?$', 'i'            // fragment optional
+                );
+                return !!pattern.test(url);
+            }
+
+            if (localStorage.getItem("formUrl")) {
+                $("#formUrl").val(localStorage.getItem("formUrl"));
+            }
+
+            $("#formUrl").on("input", function () {
+                console.log( $(this).val().trim());
+                localStorage.setItem("formUrl", $(this).val().trim());
+            });
+
+            $("#gotoFormLink").click(function () {
+                let getUrl = $('#formUrl').val().trim();
+
+                if (getUrl == ""){ return; }
+
+                if (isValidUrl(getUrl)) {
+                    // window.location.href = getUrl;
+                    window.open(getUrl, '_blank')
+                    return
+                } else {
+                    alert("❌ Invalid URL. Please enter a correct one.");
+                }
+            });
+
+        });
+    </script>
+</body>
+
+</html>
